@@ -1,5 +1,6 @@
 package com.lld.enitity;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class User {
@@ -8,7 +9,7 @@ public class User {
 
     public User(String userId) {
         this.userId = userId;
-        this.groups = groups;
+        this.groups = new ArrayList<>();
     }
 
     public String getUserId() {

@@ -7,7 +7,9 @@ import com.lld.service.impl.EqualSplitStrategy;
 public class SplitStrategyFactory {
     public static SplitStrategy createSplitStrategy(SplitType splitType) {
         return switch (splitType) {
-            case EQUAL, EXACT, PERCENTAGE -> new EqualSplitStrategy();
+            case EQUAL -> new EqualSplitStrategy();
+            case EXACT -> new EqualSplitStrategy();
+            case PERCENTAGE -> new EqualSplitStrategy();
         };
     }
 }

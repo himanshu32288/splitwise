@@ -5,29 +5,35 @@ import java.util.List;
 
 public class Group {
     private String groupId;
+    private String grpupName;
     private List<User> users;
     private List<Expense> expenses;
 
-    public Group(String groupId) {
+    public Group(String groupId, String grpupName) {
         this.users = new ArrayList<>();
         expenses = new ArrayList<>();
         this.groupId = groupId;
+        this.grpupName = grpupName;
     }
 
     public String getGroupId() {
         return groupId;
     }
 
+    public String getGrpupName() {
+        return grpupName;
+    }
+
     public List<User> getUsers() {
         return users;
     }
 
-    public void addUser(User user) {
-        this.users.add(user);
-    }
-
     public List<Expense> getExpenses() {
         return expenses;
+    }
+
+    public void addUser(User user) {
+        this.users.add(user);
     }
 
     public void addExpense(Expense expense) {
