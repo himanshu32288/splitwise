@@ -4,6 +4,8 @@ import com.lld.enums.SplitType;
 import lombok.Builder;
 import lombok.Getter;
 
+import java.util.Map;
+
 @Builder
 @Getter
 public class ExpenseRequest {
@@ -11,4 +13,5 @@ public class ExpenseRequest {
     double amount;
     private String groupId;
     private SplitType splitType;
+    Map<String, Double> participants;
 }

@@ -31,7 +31,7 @@ public class SplitWiseService {
         splitStrategies.put(SplitType.EXACT, SplitStrategyFactory.createSplitStrategy(SplitType.EXACT));
     }
 
-    public void createExpense(ExpenseRequest expenseRequest) {
+    public synchronized void createExpense(ExpenseRequest expenseRequest) {
         groupRepository.getGroupById(expenseRequest.getGroupId())
                 .ifPresent(group -> {
                     Expense expense = splitStrategies.get(expenseRequest.getSplitType()).splitExpense(expenseRequest, group);
@@ -48,10 +48,12 @@ public class SplitWiseService {
         return group.getExpenses()
                 .stream()
                 .filter(expense -> expense.getPaidBy().getUserId().equals(userA))
-                .filter(expense -> expense.getBalances()
+                .map(expense -> expense.getBalances()
                         .stream()
-                        .anyMatch(balance -> balance.getPaidTo().getUserId().equals(userB)))
-                .map(Expense::getAmount)
+                        .filter(balance -> balance.getPaidTo().getUserId().equals(userB))
+                        .map(Balance::getAmount)
+                        .reduce(0.0, Double::sum)
+                )
                 .reduce(0.0, Double::sum);
     }
 
