@@ -2,6 +2,7 @@ package com.lld.enitity;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 public class User {
     String userId;
@@ -9,7 +10,7 @@ public class User {
 
     public User(String userId) {
         this.userId = userId;
-        this.groups = new ArrayList<>();
+        this.groups =new CopyOnWriteArrayList<>();
     }
 
     public String getUserId() {
@@ -17,10 +18,12 @@ public class User {
     }
 
     public List<Group> getGroups() {
-        return groups;
+        return new ArrayList<>(groups);  // Return defensive copy
     }
 
-    public void addGroup(Group group) {
-        this.groups.add(group);
+    public synchronized void addGroup(Group group) {
+        if (group != null) {
+            groups.add(group);
+        }
     }
 }

@@ -13,6 +13,7 @@ import java.util.List;
 public class ExactSplit implements SplitStrategy {
     @Override
     public Expense splitExpense(ExpenseRequest expenseRequest, Group group) {
+        validateEqualSplit(expenseRequest);
         double totalAmount = expenseRequest.getAmount();
         User paidBy = group.getUsers()
                 .stream().filter(user -> user.getUserId().equals(expenseRequest.getPaidBy()))
@@ -35,5 +36,12 @@ public class ExactSplit implements SplitStrategy {
                 .paidBy(paidBy)
                 .amount(totalAmount)
                 .build();
+    }
+
+private void validateEqualSplit(ExpenseRequest expenseRequest) {
+        double totalExactAmount = expenseRequest.getParticipants().values().stream().mapToDouble(Double::doubleValue).sum();
+        if (totalExactAmount != expenseRequest.getAmount()) {
+            throw new IllegalArgumentException("Total exact amount must be equal to the expense amount");
+        }
     }
 }

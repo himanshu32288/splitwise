@@ -2,6 +2,7 @@ package com.lld.enitity;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 public class Group {
     private String groupId;
@@ -10,8 +11,8 @@ public class Group {
     private List<Expense> expenses;
 
     public Group(String groupId, String grpupName) {
-        this.users = new ArrayList<>();
-        expenses = new ArrayList<>();
+        this.users = new CopyOnWriteArrayList<>();
+        expenses = new CopyOnWriteArrayList<>();
         this.groupId = groupId;
         this.grpupName = grpupName;
     }

@@ -13,6 +13,7 @@ import java.util.List;
 public class PercentageSplit implements SplitStrategy {
     @Override
     public Expense splitExpense(ExpenseRequest expenseRequest, Group group) {
+        validatePercentage(expenseRequest);
         double totalAmount = expenseRequest.getAmount();
         User paidBy = group.getUsers()
                 .stream().filter(user -> user.getUserId().equals(expenseRequest.getPaidBy()))
@@ -35,5 +36,12 @@ public class PercentageSplit implements SplitStrategy {
                 .paidBy(paidBy)
                 .amount(totalAmount)
                 .build();
+    }
+
+private void validatePercentage(ExpenseRequest expenseRequest) {
+        double totalPercentage = expenseRequest.getParticipants().values().stream().mapToDouble(Double::doubleValue).sum();
+        if (totalPercentage != 100) {
+            throw new IllegalArgumentException("Total percentage must be equal to 100");
+        }
     }
 }
