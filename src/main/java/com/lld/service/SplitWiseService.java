@@ -11,20 +11,24 @@ import com.lld.repository.GroupRepository;
 import com.lld.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.stream.Collectors;
+import java.util.*;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 @RequiredArgsConstructor
 public class SplitWiseService {
     private final UserRepository userRepository;
     private final GroupRepository groupRepository;
-    private final Map<SplitType, SplitStrategy> splitStrategies;
+    private final EnumMap<SplitType, SplitStrategy> splitStrategies;
     private final ReentrantReadWriteLock lock = new ReentrantReadWriteLock();
+
+    public SplitWiseService(UserRepository userRepository, GroupRepository groupRepository) {
+        this.userRepository = userRepository;
+        this.groupRepository = groupRepository;
+        this.splitStrategies = new EnumMap<>(SplitType.class);
+        splitStrategies.put(SplitType.EQUAL, SplitStrategyFactory.createSplitStrategy(SplitType.EQUAL));
+        splitStrategies.put(SplitType.EXACT, SplitStrategyFactory.createSplitStrategy(SplitType.EXACT));
+        splitStrategies.put(SplitType.PERCENTAGE, SplitStrategyFactory.createSplitStrategy(SplitType.PERCENTAGE));
+    }
 
     public void createExpense(ExpenseRequest expenseRequest) {
         lock.writeLock().lock();
@@ -34,6 +38,20 @@ public class SplitWiseService {
                         Expense expense = splitStrategies.get(expenseRequest.getSplitType())
                                 .splitExpense(expenseRequest, group);
                         group.addExpense(expense);
+                    });
+        } finally {
+            lock.writeLock().unlock();
+        }
+    }
+
+    public void deleteExpense(ExpenseRequest expenseRequest) {
+        lock.writeLock().lock();
+        try {
+            groupRepository.getGroupById(expenseRequest.getGroupId())
+                    .ifPresent(group -> {
+                        Expense expense = splitStrategies.get(expenseRequest.getSplitType())
+                                .splitExpense(expenseRequest, group);
+                        group.removeExpense(expense);
                     });
         } finally {
             lock.writeLock().unlock();

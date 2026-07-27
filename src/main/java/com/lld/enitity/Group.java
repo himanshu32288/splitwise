@@ -41,4 +41,8 @@ public class Group {
         this.expenses.add(expense);
     }
 
+    public void removeExpense(Expense expense) {
+        this.expenses.add(expense);
+    }
+
 }
