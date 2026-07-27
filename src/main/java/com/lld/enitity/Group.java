@@ -1,14 +1,15 @@
 package com.lld.enitity;
 
-import java.util.ArrayList;
+import com.lld.observer.Subject;
+
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
-public class Group {
-    private String groupId;
-    private String grpupName;
-    private List<User> users;
-    private List<Expense> expenses;
+public class Group implements Subject {
+    private final String groupId;
+    private final String grpupName;
+    private final List<User> users;
+    private final List<Expense> expenses;
 
     public Group(String groupId, String grpupName) {
         this.users = new CopyOnWriteArrayList<>();
@@ -41,8 +42,30 @@ public class Group {
         this.expenses.add(expense);
     }
 
-    public void removeExpense(Expense expense) {
-        this.expenses.add(expense);
+    public void removeExpense(String expenseId) {
+        this.expenses.removeIf(e -> e.getExpenseId().equals(expenseId));
     }
 
+    @Override
+    public void addObserver(User user) {
+        this.users.add(user);
+    }
+
+    @Override
+    public void removeObserver(User user) {
+        this.users.remove(user);
+    }
+
+    @Override
+    public void notifyObservers(Expense expense) {
+        String payerId = expense.getPaidBy().getUserId();
+        String message = String.format("%s added $%.2f expense in %s group",
+                payerId, expense.getAmount(), grpupName);
+
+        for (User user : users) {
+            if (!user.getUserId().equals(payerId)) {
+                user.update(message);
+            }
+        }
+    }
 }

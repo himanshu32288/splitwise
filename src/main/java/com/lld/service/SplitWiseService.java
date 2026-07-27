@@ -38,6 +38,7 @@ public class SplitWiseService {
                         Expense expense = splitStrategies.get(expenseRequest.getSplitType())
                                 .splitExpense(expenseRequest, group);
                         group.addExpense(expense);
+                        group.notifyObservers(expense);
                     });
         } finally {
             lock.writeLock().unlock();
@@ -51,7 +52,7 @@ public class SplitWiseService {
                     .ifPresent(group -> {
                         Expense expense = splitStrategies.get(expenseRequest.getSplitType())
                                 .splitExpense(expenseRequest, group);
-                        group.removeExpense(expense);
+                        group.removeExpense(expense.getExpenseId());
                     });
         } finally {
             lock.writeLock().unlock();

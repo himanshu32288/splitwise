@@ -13,6 +13,8 @@ public class Expense {
     @Getter
     private User paidBy;
     private List<Balance> balances;
+    @Getter
+    private String expenseId;
 
     public List<Balance> getBalances() {
         return Collections.unmodifiableList(balances);
