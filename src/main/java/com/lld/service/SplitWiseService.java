@@ -7,6 +7,7 @@ import com.lld.enitity.Group;
 import com.lld.enitity.User;
 import com.lld.enums.SplitType;
 import com.lld.factory.SplitStrategyFactory;
+import com.lld.observer.ExpenseNotificationService;
 import com.lld.repository.GroupRepository;
 import com.lld.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -20,6 +21,7 @@ public class SplitWiseService {
     private final GroupRepository groupRepository;
     private final EnumMap<SplitType, SplitStrategy> splitStrategies;
     private final ReentrantReadWriteLock lock = new ReentrantReadWriteLock();
+    private final ExpenseNotificationService notificationService = new ExpenseNotificationService();
 
     public SplitWiseService(UserRepository userRepository, GroupRepository groupRepository) {
         this.userRepository = userRepository;
@@ -38,7 +40,7 @@ public class SplitWiseService {
                         Expense expense = splitStrategies.get(expenseRequest.getSplitType())
                                 .splitExpense(expenseRequest, group);
                         group.addExpense(expense);
-                        group.notifyObservers(expense);
+                        notificationService.notifyExpenseCreated(group, expense);
                     });
         } finally {
             lock.writeLock().unlock();

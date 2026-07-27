@@ -1,11 +1,14 @@
 package com.lld.enitity;
 
-import com.lld.observer.Subject;
-
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
-public class Group implements Subject {
+/**
+ * Pure domain entity: just membership and expense data.
+ * No notification/observer logic lives here — see
+ * {@link com.lld.observer.ExpenseNotificationService} for that concern.
+ */
+public class Group {
     private final String groupId;
     private final String grpupName;
     private final List<User> users;
@@ -44,28 +47,5 @@ public class Group implements Subject {
 
     public void removeExpense(String expenseId) {
         this.expenses.removeIf(e -> e.getExpenseId().equals(expenseId));
-    }
-
-    @Override
-    public void addObserver(User user) {
-        this.users.add(user);
-    }
-
-    @Override
-    public void removeObserver(User user) {
-        this.users.remove(user);
-    }
-
-    @Override
-    public void notifyObservers(Expense expense) {
-        String payerId = expense.getPaidBy().getUserId();
-        String message = String.format("%s added $%.2f expense in %s group",
-                payerId, expense.getAmount(), grpupName);
-
-        for (User user : users) {
-            if (!user.getUserId().equals(payerId)) {
-                user.update(message);
-            }
-        }
     }
 }
